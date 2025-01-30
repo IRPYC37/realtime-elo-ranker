@@ -28,13 +28,22 @@ let MatchService = class MatchService {
         const winner = await this.playerRepository.findOne({ where: { id: winnerId } });
         const loser = await this.playerRepository.findOne({ where: { id: loserId } });
         if (!winner) {
-            throw new common_1.NotFoundException(`Player with id ${winnerId} not found`);
+            throw new common_1.NotFoundException({
+                code: 422,
+                message: `Player with id ${winnerId} not found`
+            });
         }
         if (!loser) {
-            throw new common_1.NotFoundException(`Player with id ${loserId} not found`);
+            throw new common_1.NotFoundException({
+                code: 422,
+                message: `Player with id ${loserId} not found`
+            });
         }
         if (winnerId === loserId) {
-            throw new common_1.BadRequestException("Winner and loser cannot be the same player");
+            throw new common_1.BadRequestException({
+                code: 400,
+                message: "Winner and loser cannot be the same player"
+            });
         }
         const newMatch = this.matchRepository.create({
             winner,

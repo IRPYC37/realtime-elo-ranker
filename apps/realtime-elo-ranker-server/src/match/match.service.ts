@@ -24,13 +24,22 @@ constructor(
     const loser = await this.playerRepository.findOne({ where: { id: loserId } });
 
     if (!winner) {
-        throw new NotFoundException(`Player with id ${winnerId} not found`);
+        throw new NotFoundException({
+            code: 422,
+            message: `Player with id ${winnerId} not found`
+        });
     }
     if (!loser) {
-        throw new NotFoundException(`Player with id ${loserId} not found`);
+        throw new NotFoundException({
+            code: 422,
+            message: `Player with id ${loserId} not found`
+        });
     }
     if (winnerId === loserId) {
-        throw new BadRequestException("Winner and loser cannot be the same player");
+        throw new BadRequestException({
+            code: 400,
+            message: "Winner and loser cannot be the same player"
+        });
     }
 
     // Création du match

@@ -22,9 +22,16 @@ export class PlayerService {
       throw new BadRequestException(`A player with id ${id} already exists`);
     }
 
+    // Calculer la moyenne de tous les rangs
+    const players = await this.playerRepository.find();
+    const totalRank = players.reduce((sum, player) => sum + player.rank, 0);
+    const averageRank = players.length ? totalRank / players.length : 0;
+
+    const startRank = averageRank;
+
     const newPlayer = this.playerRepository.create({
       id: id,  // Utilisation de `id` comme ID
-      rank: 1000,
+      rank: startRank,
     });
 
     return await this.playerRepository.save(newPlayer);

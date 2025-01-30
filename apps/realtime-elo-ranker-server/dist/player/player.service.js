@@ -27,9 +27,13 @@ let PlayerService = class PlayerService {
         if (existingPlayer) {
             throw new common_1.BadRequestException(`A player with id ${id} already exists`);
         }
+        const players = await this.playerRepository.find();
+        const totalRank = players.reduce((sum, player) => sum + player.rank, 0);
+        const averageRank = players.length ? totalRank / players.length : 0;
+        const startRank = averageRank;
         const newPlayer = this.playerRepository.create({
             id: id,
-            rank: 1000,
+            rank: startRank,
         });
         return await this.playerRepository.save(newPlayer);
     }

@@ -8,15 +8,15 @@ import { Player } from 'src/player/entities/player.entity';
 
 @Injectable()
 export class MatchService {
-  constructor(
+constructor(
     @InjectRepository(Match)
     private readonly matchRepository: Repository<Match>,
 
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>,
-  ) {}
+    ) {}
 
-  async create(createMatchDto: CreateMatchDto): Promise<Match> {
+    async create(createMatchDto: CreateMatchDto): Promise<Match> {
     const { winner: winnerId, loser: loserId, draw } = createMatchDto
 
     // Vérifier que les joueurs existent
@@ -24,20 +24,20 @@ export class MatchService {
     const loser = await this.playerRepository.findOne({ where: { id: loserId } });
 
     if (!winner) {
-      throw new NotFoundException(`Player with id ${winnerId} not found`);
+        throw new NotFoundException(`Player with id ${winnerId} not found`);
     }
     if (!loser) {
-      throw new NotFoundException(`Player with id ${loserId} not found`);
+        throw new NotFoundException(`Player with id ${loserId} not found`);
     }
     if (winnerId === loserId) {
-      throw new BadRequestException("Winner and loser cannot be the same player");
+        throw new BadRequestException("Winner and loser cannot be the same player");
     }
 
     // Création du match
     const newMatch = this.matchRepository.create({
-      winner,
-      loser,
-      draw,
+        winner,
+        loser,
+        draw,
     });
 
     const { newWinnerRank, newLoserRank } = this.calculateElo(
@@ -54,47 +54,47 @@ export class MatchService {
 
     return await this.matchRepository.save(newMatch);
 
-  }
+}
 
-  async findAll(): Promise<Match[]> {
+    async findAll(): Promise<Match[]> {
     return this.matchRepository.find({ relations: ['winner', 'loser'] });
-  }
+    }
 
-  async findOne(id: string): Promise<Match> {
+    async findOne(id: string): Promise<Match> {
     const match = await this.matchRepository.findOne({ where: { id }, relations: ['winner', 'loser'] });
     if (!match) {
-      throw new NotFoundException(`Match with id ${id} not found`);
+        throw new NotFoundException(`Match with id ${id} not found`);
     }
     return match;
-  }
+}
 
-  async update(id: string, updateMatchDto: UpdateMatchDto): Promise<Match> {
+    async update(id: string, updateMatchDto: UpdateMatchDto): Promise<Match> {
     const match = await this.findOne(id);
 
     // Mise à jour du match
     Object.assign(match, updateMatchDto);
 
     return this.matchRepository.save(match);
-  }
+}
 
-  async remove(id: string): Promise<void> {
+async remove(id: string): Promise<void> {
     const result = await this.matchRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(`Match with id ${id} not found`);
+        throw new NotFoundException(`Match with id ${id} not found`);
     }
-  }
+}
 
 
 private calculateElo(
     winnerRank: number,
     loserRank: number,
     draw: boolean = false,
-  ): { newWinnerRank: number; newLoserRank: number } {
+): { newWinnerRank: number; newLoserRank: number } {
     const k = 32; // Facteur de mise Ã  jour
     const expectedWinner =
-      1 / (1 + Math.pow(10, (loserRank - winnerRank) / 400));
+        1 / (1 + Math.pow(10, (loserRank - winnerRank) / 400));
     const expectedLoser =
-      1 / (1 + Math.pow(10, (winnerRank - loserRank) / 400));
+        1 / (1 + Math.pow(10, (winnerRank - loserRank) / 400));
 
     let newWinnerRank, newLoserRank;
 

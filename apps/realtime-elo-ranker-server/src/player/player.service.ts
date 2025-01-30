@@ -19,7 +19,10 @@ export class PlayerService {
     // Vérifie si un joueur avec cet ID existe déjà
     const existingPlayer = await this.playerRepository.findOne({ where: { id: id } });
     if (existingPlayer) {
-      throw new BadRequestException(`A player with id ${id} already exists`);
+      throw new BadRequestException({
+        code: 422,
+        message: `A player with id ${id} already exists`
+    });
     }
 
     // Calculer la moyenne de tous les rangs

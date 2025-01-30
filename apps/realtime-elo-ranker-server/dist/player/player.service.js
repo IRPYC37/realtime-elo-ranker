@@ -25,7 +25,10 @@ let PlayerService = class PlayerService {
         const { id } = createPlayerDto;
         const existingPlayer = await this.playerRepository.findOne({ where: { id: id } });
         if (existingPlayer) {
-            throw new common_1.BadRequestException(`A player with id ${id} already exists`);
+            throw new common_1.BadRequestException({
+                code: 422,
+                message: `A player with id ${id} already exists`
+            });
         }
         const players = await this.playerRepository.find();
         const totalRank = players.reduce((sum, player) => sum + player.rank, 0);

@@ -15,6 +15,7 @@ const player_module_1 = require("./player/player.module");
 const match_module_1 = require("./match/match.module");
 const player_entity_1 = require("./player/entities/player.entity");
 const match_entity_1 = require("./match/entities/match.entity");
+const ranking_module_1 = require("./ranking/ranking.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -28,7 +29,7 @@ exports.AppModule = AppModule = __decorate([
                 synchronize: true,
             }),
             player_module_1.PlayerModule,
-            match_module_1.MatchModule,
+            match_module_1.MatchModule, ranking_module_1.RankingModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

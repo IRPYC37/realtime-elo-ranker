@@ -31,7 +31,7 @@ let PlayerService = class PlayerService {
             });
         }
         const players = await this.playerRepository.find();
-        const totalRank = players.reduce((sum, player) => sum + player.rank, 0);
+        const totalRank = players.reduce((acc, player) => acc + player.rank, 0);
         const averageRank = players.length ? totalRank / players.length : 0;
         const startRank = averageRank;
         const newPlayer = this.playerRepository.create({

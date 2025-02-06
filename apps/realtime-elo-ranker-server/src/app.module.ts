@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm'; // Importation de TypeOrmModule
 import { AppController } from './app.controller';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppService } from './app.service';
 import { PlayerModule } from './player/player.module';
 import { MatchModule } from './match/match.module';
@@ -16,8 +17,10 @@ import { RankingModule } from './ranking/ranking.module';
       entities: [Player,Match], // Liste des entités utilisées par TypeORM
       synchronize: true, // À utiliser en développement, attention en production !
     }),
+    EventEmitterModule.forRoot(),
     PlayerModule, // Assure-toi que PlayerModule est bien importé
-    MatchModule, RankingModule,
+    MatchModule,
+    RankingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -19,6 +19,7 @@ exports.RankingModule = RankingModule = __decorate([
         imports: [player_module_1.PlayerModule],
         controllers: [ranking_controller_1.RankingController],
         providers: [ranking_service_1.RankingService],
+        exports: [ranking_service_1.RankingService],
     })
 ], RankingModule);
 //# sourceMappingURL=ranking.module.js.map

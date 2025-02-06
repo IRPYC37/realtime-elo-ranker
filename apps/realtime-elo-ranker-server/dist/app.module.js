@@ -10,6 +10,7 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
+const event_emitter_1 = require("@nestjs/event-emitter");
 const app_service_1 = require("./app.service");
 const player_module_1 = require("./player/player.module");
 const match_module_1 = require("./match/match.module");
@@ -28,8 +29,10 @@ exports.AppModule = AppModule = __decorate([
                 entities: [player_entity_1.Player, match_entity_1.Match],
                 synchronize: true,
             }),
+            event_emitter_1.EventEmitterModule.forRoot(),
             player_module_1.PlayerModule,
-            match_module_1.MatchModule, ranking_module_1.RankingModule,
+            match_module_1.MatchModule,
+            ranking_module_1.RankingModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

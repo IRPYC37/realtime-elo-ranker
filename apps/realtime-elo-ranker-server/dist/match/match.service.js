@@ -18,10 +18,12 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const match_entity_1 = require("./entities/match.entity");
 const player_entity_1 = require("../player/entities/player.entity");
+const ranking_service_1 = require("../ranking/ranking.service");
 let MatchService = class MatchService {
-    constructor(matchRepository, playerRepository) {
+    constructor(matchRepository, playerRepository, rankingService) {
         this.matchRepository = matchRepository;
         this.playerRepository = playerRepository;
+        this.rankingService = rankingService;
     }
     async create(createMatchDto) {
         const { winner: winnerId, loser: loserId, draw } = createMatchDto;
@@ -53,6 +55,14 @@ let MatchService = class MatchService {
         const { newWinnerRank, newLoserRank } = this.calculateElo(winner.rank, loser.rank, draw);
         winner.rank = newWinnerRank;
         loser.rank = newLoserRank;
+        this.rankingService.emitRankingUpdate({
+            id: winner.id,
+            rank: newWinnerRank
+        });
+        this.rankingService.emitRankingUpdate({
+            id: loser.id,
+            rank: newLoserRank
+        });
         this.playerRepository.save(winner);
         this.playerRepository.save(loser);
         return await this.matchRepository.save(newMatch);
@@ -100,6 +110,7 @@ exports.MatchService = MatchService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(match_entity_1.Match)),
     __param(1, (0, typeorm_1.InjectRepository)(player_entity_1.Player)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        ranking_service_1.RankingService])
 ], MatchService);
 //# sourceMappingURL=match.service.js.map

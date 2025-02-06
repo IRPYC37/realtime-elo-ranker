@@ -8,5 +8,6 @@ import { PlayerModule } from '../player/player.module';
   imports: [PlayerModule],
   controllers: [RankingController],
   providers: [RankingService],
+  exports: [RankingService],
 })
 export class RankingModule {}

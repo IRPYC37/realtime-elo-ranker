@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Match } from './entities/match.entity';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { Player } from 'src/player/entities/player.entity';
+import { RankingService } from 'src/ranking/ranking.service';
+
 
 @Injectable()
 export class MatchService {
@@ -14,6 +16,7 @@ constructor(
 
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>,
+    private readonly rankingService: RankingService
     ) {}
 
     async create(createMatchDto: CreateMatchDto): Promise<Match> {
@@ -57,6 +60,15 @@ constructor(
 
     winner.rank = newWinnerRank;
     loser.rank = newLoserRank;
+
+    this.rankingService.emitRankingUpdate({
+        id: winner.id,
+        rank: newWinnerRank
+    });
+    this.rankingService.emitRankingUpdate({
+        id: loser.id,
+        rank: newLoserRank
+    });
 
     this.playerRepository.save(winner);
     this.playerRepository.save(loser);

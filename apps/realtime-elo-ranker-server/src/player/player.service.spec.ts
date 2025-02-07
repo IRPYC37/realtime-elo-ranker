@@ -4,6 +4,22 @@ import { PlayerService } from './player.service';
 import { Player } from './entities/player.entity';
 import { Repository } from 'typeorm';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { RankingService } from '../ranking/ranking.service'; // Ajoute l'import de RankingService
+
+// Mocks
+const mockPlayerRepository = {
+  findOne: jest.fn(),
+  save: jest.fn(),
+  find: jest.fn(),
+  create: jest.fn(),
+  delete: jest.fn(),
+};
+
+const mockRankingService = {
+  getRankings: jest.fn(),
+  emitRankingUpdate: jest.fn(),
+};
+
 
 describe('PlayerService', () => {
   let service: PlayerService;
@@ -15,7 +31,11 @@ describe('PlayerService', () => {
         PlayerService,
         {
           provide: getRepositoryToken(Player),
-          useClass: Repository,
+          useValue: mockPlayerRepository, // Utilisation du mock pour PlayerRepository
+        },
+        {
+          provide: RankingService,
+          useValue: mockRankingService, // Utilisation du mock pour RankingService
         },
       ],
     }).compile();

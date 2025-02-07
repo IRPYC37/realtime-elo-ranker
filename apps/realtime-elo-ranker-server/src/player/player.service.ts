@@ -1,3 +1,4 @@
+import { RankingService } from 'src/ranking/ranking.service';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,9 +8,11 @@ import { Player } from './entities/player.entity';
 
 @Injectable()
 export class PlayerService {
+  RankingService: any;
   constructor(
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>,
+    private readonly rankingService: RankingService
   ) {}
 
   async create(createPlayerDto: CreatePlayerDto): Promise<Player> {
@@ -36,6 +39,11 @@ export class PlayerService {
       rank: startRank,
     });
 
+    this.rankingService.emitRankingUpdate({
+      id: newPlayer.id,
+      rank: newPlayer.rank
+  });
+
     return await this.playerRepository.save(newPlayer);
   }
 
@@ -55,7 +63,6 @@ export class PlayerService {
     const player = await this.findOne(id);  // Vérifie si le joueur existe
 
     Object.assign(player, updatePlayerDto);  // Met à jour les propriétés
-
     return this.playerRepository.save(player);
   }
 

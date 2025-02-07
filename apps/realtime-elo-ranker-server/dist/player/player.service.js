@@ -13,13 +13,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PlayerService = void 0;
+const ranking_service_1 = require("../ranking/ranking.service");
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const player_entity_1 = require("./entities/player.entity");
 let PlayerService = class PlayerService {
-    constructor(playerRepository) {
+    constructor(playerRepository, rankingService) {
         this.playerRepository = playerRepository;
+        this.rankingService = rankingService;
     }
     async create(createPlayerDto) {
         const { id } = createPlayerDto;
@@ -37,6 +39,10 @@ let PlayerService = class PlayerService {
         const newPlayer = this.playerRepository.create({
             id: id,
             rank: startRank,
+        });
+        this.rankingService.emitRankingUpdate({
+            id: newPlayer.id,
+            rank: newPlayer.rank
         });
         return await this.playerRepository.save(newPlayer);
     }
@@ -66,6 +72,7 @@ exports.PlayerService = PlayerService;
 exports.PlayerService = PlayerService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(player_entity_1.Player)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        ranking_service_1.RankingService])
 ], PlayerService);
 //# sourceMappingURL=player.service.js.map

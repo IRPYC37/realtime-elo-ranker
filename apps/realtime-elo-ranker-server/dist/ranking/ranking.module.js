@@ -10,16 +10,19 @@ exports.RankingModule = void 0;
 const common_1 = require("@nestjs/common");
 const ranking_service_1 = require("./ranking.service");
 const ranking_controller_1 = require("./ranking.controller");
-const player_module_1 = require("../player/player.module");
+const typeorm_1 = require("@nestjs/typeorm");
+const player_entity_1 = require("../player/entities/player.entity");
 let RankingModule = class RankingModule {
 };
 exports.RankingModule = RankingModule;
 exports.RankingModule = RankingModule = __decorate([
     (0, common_1.Module)({
-        imports: [player_module_1.PlayerModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([player_entity_1.Player]),
+        ],
         controllers: [ranking_controller_1.RankingController],
         providers: [ranking_service_1.RankingService],
-        exports: [ranking_service_1.RankingService],
+        exports: [ranking_service_1.RankingService]
     })
 ], RankingModule);
 //# sourceMappingURL=ranking.module.js.map

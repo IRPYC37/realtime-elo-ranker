@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 interface RankingUpdateEvent {
   player: Player;
@@ -15,6 +15,7 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class RankingService {
   private readonly rankingEmitter = new EventEmitter2();
+  private readonly logger = new Logger(RankingService.name);
   constructor(
     @InjectRepository(Player)
     private readonly playerRepository: Repository<Player>,
@@ -41,18 +42,8 @@ export class RankingService {
     return `This action removes a #${id} ranking`;
   }
 
-  getRanking(callback: (error: any, ranking?: Player[]) => void): void {
-    this.playerRepository.find()
-      .then(players => {
-        callback(null, players);
-      })
-      .catch(error => {
-        callback(error);
-      });
-  }
-
   getRankingUpdates(): Observable<MessageEvent> {
-    return fromEvent(this.eventEmitter, 'rankingUpdate').pipe(
+    return fromEvent<RankingUpdateEvent>(this.rankingEmitter, 'rankingUpdate').pipe(
       map(player => {
         const messageData = {
           type: 'RankingUpdate',
@@ -67,7 +58,7 @@ export class RankingService {
     );
   }
 
-  emitRankingUpdate(player: { id: string; rank: number }): void {
+  emitRankingUpdate(player: { id: string; rank: number }): void { // OK
     this.rankingEmitter.emit('rankingUpdate', player);
   }
 }

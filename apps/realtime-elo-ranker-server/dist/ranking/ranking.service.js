@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var RankingService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RankingService = void 0;
 const common_1 = require("@nestjs/common");
@@ -20,11 +21,12 @@ const typeorm_2 = require("typeorm");
 const eventemitter2_1 = require("eventemitter2");
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
-let RankingService = class RankingService {
+let RankingService = RankingService_1 = class RankingService {
     constructor(playerRepository, eventEmitter) {
         this.playerRepository = playerRepository;
         this.eventEmitter = eventEmitter;
         this.rankingEmitter = new eventemitter2_1.EventEmitter2();
+        this.logger = new common_1.Logger(RankingService_1.name);
     }
     create(createRankingDto) {
         return 'This action adds a new ranking';
@@ -41,17 +43,8 @@ let RankingService = class RankingService {
     remove(id) {
         return `This action removes a #${id} ranking`;
     }
-    getRanking(callback) {
-        this.playerRepository.find()
-            .then(players => {
-            callback(null, players);
-        })
-            .catch(error => {
-            callback(error);
-        });
-    }
     getRankingUpdates() {
-        return (0, rxjs_1.fromEvent)(this.eventEmitter, 'rankingUpdate').pipe((0, operators_1.map)(player => {
+        return (0, rxjs_1.fromEvent)(this.rankingEmitter, 'rankingUpdate').pipe((0, operators_1.map)(player => {
             const messageData = {
                 type: 'RankingUpdate',
                 player
@@ -68,7 +61,7 @@ let RankingService = class RankingService {
     }
 };
 exports.RankingService = RankingService;
-exports.RankingService = RankingService = __decorate([
+exports.RankingService = RankingService = RankingService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(player_entity_1.Player)),
     __metadata("design:paramtypes", [typeorm_2.Repository,

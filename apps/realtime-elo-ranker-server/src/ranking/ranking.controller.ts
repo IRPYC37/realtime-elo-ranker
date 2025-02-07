@@ -1,15 +1,19 @@
-import { Controller,NotFoundException, Get, Post, Body, Patch, Param, Delete, Sse } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Sse, Logger } from '@nestjs/common';
 import { RankingService } from './ranking.service';
 import { CreateRankingDto } from './dto/create-ranking.dto';
 import { UpdateRankingDto } from './dto/update-ranking.dto';
 import { Observable } from 'rxjs';
-import { EventEmitter } from 'events';
 
 @Controller('api/ranking')
 export class RankingController {
-  private readonly eventEmitter = new EventEmitter();
+  private readonly logger = new Logger(RankingController.name);
 
   constructor(private readonly rankingService: RankingService) {}
+
+  @Sse('events')
+  subscribeToRankingUpdates(): Observable<MessageEvent> {
+    return this.rankingService.getRankingUpdates();
+  }
 
   @Post()
   create(@Body() createRankingDto: CreateRankingDto) {
@@ -17,21 +21,8 @@ export class RankingController {
   }
 
   @Get()
-  getRanking() {
-    return new Promise((resolve, reject) => {
-      this.rankingService.getRanking((error, ranking) => {
-        if (error) {
-          return reject(new Error(error));
-        }
-        if (!ranking || ranking.length === 0) {
-          return reject(new NotFoundException({
-            code: 404,
-            message: "Le classement n'est pas disponible car aucun joueur n'existe.",
-          }));
-        }
-        resolve(ranking);
-      });
-    });
+  findAll() {
+    return this.rankingService.findAll();
   }
 
   @Get(':id')
@@ -48,10 +39,4 @@ export class RankingController {
   remove(@Param('id') id: string) {
     return this.rankingService.remove(+id);
   }
-
-  @Sse('events')
-  subscribeToRankingUpdates(): Observable<MessageEvent> {
-    return this.rankingService.getRankingUpdates();
-  }
-
 }

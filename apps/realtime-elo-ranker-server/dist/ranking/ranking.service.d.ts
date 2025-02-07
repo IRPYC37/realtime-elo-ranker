@@ -8,13 +8,13 @@ export declare class RankingService {
     private readonly playerRepository;
     private readonly eventEmitter;
     private readonly rankingEmitter;
+    private readonly logger;
     constructor(playerRepository: Repository<Player>, eventEmitter: EventEmitter2);
     create(createRankingDto: CreateRankingDto): string;
     findAll(): Promise<Player[]>;
     findOne(id: number): string;
     update(id: number, updateRankingDto: UpdateRankingDto): string;
     remove(id: number): string;
-    getRanking(callback: (error: any, ranking?: Player[]) => void): void;
     getRankingUpdates(): Observable<MessageEvent>;
     emitRankingUpdate(player: {
         id: string;
